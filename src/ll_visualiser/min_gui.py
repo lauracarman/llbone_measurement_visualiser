@@ -32,14 +32,9 @@ if __name__ == "__main__":
 
     # load landmarks and measurements
     landmarks = np.loadtxt(l_path, dtype=object).ravel()
-    measurements = np.loadtxt(m_path, dtype=object)
 
     landmark_filtered_labels = np.loadtxt(lf_path, dtype=str)
     measurement_filtered_labels = np.loadtxt(mf_path, dtype=str)
-
-    measurements_labels = measurements[0].split(',')
-    measurements_data = measurements[1] + measurements[2]
-    measurements_data = measurements_data.split(',')
 
     landmarks_points = []
     landmarks_labels = []
