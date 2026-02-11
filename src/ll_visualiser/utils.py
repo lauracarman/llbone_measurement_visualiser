@@ -4,8 +4,9 @@ import pyvista as pv
 
 def visualise_meshes(p, mesh_files):
     """
-    p: pv.Plotter object.
-    mesh_files: List of mesh files.
+    Args:
+        p (pv.Plotter): PyVista Plotter object.
+        mesh_files (list): List of mesh files.
     """
     meshes = []
     for file in mesh_files:
@@ -19,10 +20,11 @@ def visualise_meshes(p, mesh_files):
 
 def visualise_landmarks(p, landmarks_labels, landmarks_points, landmark_filtered_labels):
     """
-    p: pv.Plotter object.
-    landmarks_points: List of landmark coordinates.
-    landmarks_labels: List of landmark labels.
-    landmark_filtered_labels: List of landmark labels to filter.
+    Args:
+        p (pv.Plotter): PyVista Plotter object.
+        landmarks_points (list): List of landmark coordinates.
+        landmarks_labels (list): List of landmark labels.
+        landmark_filtered_labels (list): List of landmark labels to filter.
     """
     label_text_color = 'white'
 
