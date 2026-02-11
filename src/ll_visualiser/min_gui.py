@@ -2,6 +2,8 @@ import os
 import numpy as np
 import pyvista as pv
 
+from ll_visualiser.utils import visualise_meshes, visualise_landmarks
+
 pv.global_theme.allow_empty_mesh = True
 
 
@@ -13,33 +15,6 @@ class SetVisibilityCallback:
 
     def __call__(self, state):
         self.actor.SetVisibility(state)
-
-
-def process_landmarks(landmarks_labels, landmarks_points, landmark_filtered_labels):
-    # Filter the landmarks to be plotted
-    plot_landmarks_lbls = []
-    plot_landmarks_points = []
-    ll_meshes = []
-    sphere_meshes = []
-    for i, lbl in enumerate(landmark_filtered_labels):
-        try:
-            idx = landmarks_labels.index(lbl)
-            pnt = landmarks_points[idx]
-            end_pnt = pnt.copy()
-            if "right" in lbl:
-                end_pnt[1] += (i*3) + 20
-                end_pnt[2] += 150
-            else:
-                end_pnt[1] += (i*3) + 20
-                end_pnt[2] -= 150
-            ll_meshes.append(pv.Line(pnt, end_pnt))
-            sphere_meshes.append(pv.Sphere(radius=3, center=pnt))
-            plot_landmarks_lbls.append(lbl)
-            plot_landmarks_points.append(end_pnt) #pnt
-        finally:
-            continue
-
-    return plot_landmarks_lbls, plot_landmarks_points, ll_meshes, sphere_meshes
 
 
 def process_measurements_lines(plot_landmarks_lbls, plot_landmarks_points, measurements_labels, measurements_data, measurement_filtered_labels):   
@@ -586,13 +561,6 @@ if __name__ == "__main__":
     measurements_data = measurements[1] + measurements[2]
     measurements_data = measurements_data.split(',')
 
-    # using the processed and aligned meshes after running the
-    # find_landmarks_and_align.py script
-
-    meshes = []
-    for file in ply_files:
-        meshes.append(pv.read(file))
-
     landmarks_points = []
     landmarks_labels = []
 
@@ -607,10 +575,8 @@ if __name__ == "__main__":
     angles_data = []
     angles_points = []
 
-    plot_landmarks_lbls, plot_landmarks_points, ll_meshes, sphere_meshes = process_landmarks(
-                                                    landmarks_labels,
-                                                    landmarks_points,
-                                                    landmark_filtered_labels)
+    plot_landmarks_lbls, plot_landmarks_points = visualise_landmarks(
+        p, landmarks_labels, landmarks_points, landmark_filtered_labels)
 
     lines, lines_labels, lines_data, lines_points = process_measurements_lines(
                                                 plot_landmarks_lbls,
@@ -626,25 +592,7 @@ if __name__ == "__main__":
                                                 measurements_data,
                                                 measurement_filtered_labels)
 
-    # landmark label lines
-    for mesh in ll_meshes:
-        p.add_mesh(mesh,
-                   color='green',
-                   show_edges=False,
-                   opacity=0.30,
-                   line_width=4)
-
-    # landmark point spheres
-    for mesh in sphere_meshes:
-        p.add_mesh(mesh, color='red', show_edges=False, opacity=0.99)
-
-    # Bones meshes
-    bones_mesh_actor_arr = []
-    for mesh in meshes:
-        bones_mesh_actor_arr.append(p.add_mesh(mesh,
-                                               color='white',
-                                               show_edges=False,
-                                               opacity=0.99))
+    visualise_meshes(p, ply_files)
 
     # Plots landmarks
     landmark_actor = p.add_point_labels(plot_landmarks_points,
