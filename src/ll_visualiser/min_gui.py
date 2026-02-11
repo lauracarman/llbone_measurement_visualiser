@@ -12,9 +12,7 @@ def get_files_by_extension(directory, extension):
 
 
 if __name__ == "__main__":
-    p = pv.Plotter(lighting='light kit',
-                   theme=pv.set_plot_theme('default'),
-                   window_size=[2560, 1440])
+    p = pv.Plotter(lighting='light kit', theme=pv.set_plot_theme('default'), window_size=[2560, 1440])
 
     model_directory = os.path.join('..', '..', 'test', 'test_data')
     txt_files = get_files_by_extension(model_directory, '.txt')
@@ -52,9 +50,8 @@ if __name__ == "__main__":
         landmarks_points.append([float(x) for x in splits[1:4]])
         landmarks_labels.append(splits[0])
 
-    visualise_landmarks(p, landmarks_labels, landmarks_points, landmark_filtered_labels)
-
     visualise_meshes(p, ply_files)
+    visualise_landmarks(p, landmarks_labels, landmarks_points, landmark_filtered_labels)
 
     # Set intial view to frontal view
     p.view_zy(negative=True)
