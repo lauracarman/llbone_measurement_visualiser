@@ -11,8 +11,9 @@ original_landmark_files = ["orignial_lms_left.txt", "orignial_lms_right.txt"]
 predicted_landmark_files = ["predicted_lms_left.txt", "predicted_lms_right.txt"]
 
 
-def get_files_by_extension(directory, extension):
-    return [os.path.join(directory, file) for file in os.listdir(directory) if file.endswith(extension)]
+def get_files_by_extension(directory, extensions):
+    return [os.path.join(directory, file) for file in os.listdir(directory)
+            if any(file.endswith(extension) for extension in extensions)]
 
 
 def get_files_by_names(directory, names):
@@ -41,11 +42,11 @@ if __name__ == "__main__":
     p.set_background('dimgrey')
 
     model_directory = os.path.join('..', '..', 'test', 'test_data')
-    ply_files = get_files_by_extension(model_directory, '.ply')
+    mesh_files = get_files_by_extension(model_directory, ['.ply', '.stl'])
     predicted_landmark_files = get_files_by_names(model_directory, predicted_landmark_files)
     predicted_landmarks = load_landmarks(predicted_landmark_files)
 
-    visualise_meshes(p, ply_files)
+    visualise_meshes(p, mesh_files)
     visualise_landmarks(p, predicted_landmarks)
 
     # Set intial view to frontal view
