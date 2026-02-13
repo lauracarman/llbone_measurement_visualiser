@@ -1,40 +1,13 @@
 import os
-import numpy as np
 import pyvista as pv
 
-from ll_visualiser.utils import visualise_meshes, visualise_landmarks
+from ll_visualiser.utils import visualise_meshes, visualise_landmarks, get_files_by_extension, get_files_by_names, load_landmarks
 
 pv.global_theme.allow_empty_mesh = True
 
 
 original_landmark_files = ["orignial_lms_left.txt", "orignial_lms_right.txt"]
 predicted_landmark_files = ["predicted_lms_left.txt", "predicted_lms_right.txt"]
-
-
-def get_files_by_extension(directory, extensions):
-    return [os.path.join(directory, file) for file in os.listdir(directory)
-            if any(file.endswith(extension) for extension in extensions)]
-
-
-def get_files_by_names(directory, names):
-    return [os.path.join(directory, name) for name in names if os.path.exists(os.path.join(directory, name))]
-
-
-def load_landmarks(landmark_files):
-    """
-    Load and concatenate all landmark files into a single dictionary.
-
-    Args:
-        landmark_files (list): List of landmark files.
-
-    Returns:
-        dict: {landmark_name: [x, y, z], ...}
-    """
-    all_landmarks = {}
-    for landmark_file in landmark_files:
-        data = np.loadtxt(landmark_file, dtype=str)
-        all_landmarks.update({row[0]: row[1:].astype(float).tolist() for row in data})
-    return all_landmarks
 
 
 if __name__ == "__main__":
