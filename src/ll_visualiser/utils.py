@@ -48,7 +48,16 @@ def visualise_landmarks(p, landmarks):
                                         point_size=8, pickable=True)
 
 
-def process_landmarks(landmarks):
+def process_landmarks(landmarks, units='m'):
+    # Define landmark size and positioning based on units.
+    scale = 1000 if units == 'mm' else 1 if units == 'm' else None
+    if scale is None:
+        raise ValueError(f"Unsupported units: {units}. Use 'm' or 'mm'.")
+    spacing = 0.003 * scale
+    offset = 0.02 * scale
+    z_offset = 0.15 * scale
+    sphere_radius = 0.003 * scale
+
     plot_landmarks_lbls = []
     plot_landmarks_points = []
     ll_meshes = []
@@ -57,14 +66,14 @@ def process_landmarks(landmarks):
     for i, (lbl, pnt) in enumerate(landmarks.items()):
         end_pnt = pnt.copy()
         if "right" in lbl:
-            end_pnt[1] += (i * 3) + 20
-            end_pnt[2] += 150
+            end_pnt[1] += (i * spacing) + offset
+            end_pnt[2] += z_offset
         else:
-            end_pnt[1] += (i * 3) + 20
-            end_pnt[2] -= 150
+            end_pnt[1] += (i * spacing) + offset
+            end_pnt[2] -= z_offset
 
         ll_meshes.append(pv.Line(pnt, end_pnt))
-        sphere_meshes.append(pv.Sphere(radius=3, center=pnt))
+        sphere_meshes.append(pv.Sphere(radius=sphere_radius, center=pnt))
         plot_landmarks_lbls.append(lbl)
         plot_landmarks_points.append(end_pnt)
 
