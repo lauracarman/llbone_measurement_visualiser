@@ -9,25 +9,18 @@ def get_files_by_extension(directory, extensions):
             if any(file.endswith(extension) for extension in extensions)]
 
 
-def get_files_by_names(directory, names):
-    return [os.path.join(directory, name) for name in names if os.path.exists(os.path.join(directory, name))]
-
-
-def load_landmarks(landmark_files):
+def load_landmarks(landmark_file):
     """
-    Load and concatenate all landmark files into a single dictionary.
+    Load landmarks from a file into a dictionary.
 
     Args:
-        landmark_files (list): List of landmark files.
+        landmark_file (str): Path to landmark file.
 
     Returns:
         dict: {landmark_name: [x, y, z], ...}
     """
-    all_landmarks = {}
-    for landmark_file in landmark_files:
-        data = np.loadtxt(landmark_file, dtype=str)
-        all_landmarks.update({row[0]: row[1:].astype(float).tolist() for row in data})
-    return all_landmarks
+    data = np.loadtxt(landmark_file, dtype=str)
+    return {row[0]: row[1:].astype(float).tolist() for row in data}
 
 
 def visualise_meshes(p, mesh_files):
