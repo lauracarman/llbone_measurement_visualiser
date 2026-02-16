@@ -42,24 +42,29 @@ def visualise_meshes(p, mesh_files):
         bones_mesh_actor_arr.append(p.add_mesh(mesh, color='white', show_edges=False, opacity=0.99))
 
 
-def visualise_landmarks(p, landmarks, side):
+def add_landmark_spheres(p, sphere_meshes, colour='red'):
+    for mesh in sphere_meshes:
+        p.add_mesh(mesh, color=colour, show_edges=False, opacity=0.99)
+
+
+def visualise_landmarks(p, landmarks, side, colour='red'):
     """
     Args:
         p (pv.Plotter): PyVista Plotter object.
         landmarks (dictionary): Dictionary of landmarks.
         side (str): Side (left/right).
+        colour (str): Landmark sphere colour.
     """
     label_text_color = 'white'
 
-    plot_landmarks_lbls, plot_landmarks_points, ll_meshes, sphere_meshes = process_landmarks(landmarks, side)
+    plot_landmarks_lbls, plot_landmarks_points, line_meshes, sphere_meshes = process_landmarks(landmarks, side)
 
     # Landmark label lines.
-    for mesh in ll_meshes:
+    for mesh in line_meshes:
         p.add_mesh(mesh, color='green', show_edges=False, opacity=0.30, line_width=2)
 
     # Landmark point spheres.
-    for mesh in sphere_meshes:
-        p.add_mesh(mesh, color='red', show_edges=False, opacity=0.99)
+    add_landmark_spheres(p, sphere_meshes, colour)
 
     # Plots landmark labels.
     justification = 'left' if side == 'left' else 'right'
@@ -71,6 +76,14 @@ def visualise_landmarks(p, landmarks, side):
                                         point_size=0,
                                         justification_horizontal=justification,
                                         shape=None)
+
+
+def visualise_landmarks_min(p, landmarks, side, colour):
+    """
+    Visualize only the landmark spheres without labels or lines.
+    """
+    _, _, _, sphere_meshes = process_landmarks(landmarks, side)
+    add_landmark_spheres(p, sphere_meshes, colour)
 
 
 def process_landmarks(landmarks, side, units='m'):
@@ -85,7 +98,7 @@ def process_landmarks(landmarks, side, units='m'):
 
     plot_landmarks_labels = []
     plot_landmarks_points = []
-    ll_meshes = []
+    line_meshes = []
     sphere_meshes = []
 
     for i, (label, point) in enumerate(landmarks.items()):
@@ -93,9 +106,10 @@ def process_landmarks(landmarks, side, units='m'):
         end_point[1] += spacing + offset
         end_point[2] += z_offset * (1 if side == "right" else -1) * (-1 if label in medial_markers else 1)
 
-        ll_meshes.append(pv.Line(point, end_point))
+        line_meshes.append(pv.Line(point, end_point))
         sphere_meshes.append(pv.Sphere(radius=sphere_radius, center=point))
         plot_landmarks_labels.append(label)
         plot_landmarks_points.append(end_point)
 
-    return plot_landmarks_labels, plot_landmarks_points, ll_meshes, sphere_meshes
+    return plot_landmarks_labels, plot_landmarks_points, line_meshes, sphere_meshes
+
