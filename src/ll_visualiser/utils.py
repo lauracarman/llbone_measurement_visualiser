@@ -140,12 +140,10 @@ def calculate_differences(original_landmarks, predicted_landmarks):
 
     differences = {}
     for landmark in landmarks_of_interest:
-        if landmark not in original_landmarks or landmark not in predicted_landmarks:
-            continue
-
-        original = np.array(original_landmarks[landmark])
-        predicted = np.array(predicted_landmarks[landmark])
-        differences[landmark] = np.linalg.norm(original - predicted)
+        if landmark in original_landmarks and landmark in predicted_landmarks:
+            original = np.array(original_landmarks[landmark])
+            predicted = np.array(predicted_landmarks[landmark])
+            differences[landmark] = np.linalg.norm(original - predicted)
 
     return differences
 
