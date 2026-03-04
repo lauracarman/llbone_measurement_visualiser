@@ -121,15 +121,24 @@ def process_landmarks(landmarks, side, units='m'):
 
     return plot_landmarks_labels, plot_landmarks_points, line_meshes, sphere_meshes
 
-def define_measurements():
+def define_measurements(left_landmarks, right_landmarks):
+    def calculate_distance(point_1, point_2):
+        return f"{np.linalg.norm(point_1 - point_2) * 1000:.2f}"
+
+    asis_width = calculate_distance(np.array(left_landmarks['ASIS']), np.array(right_landmarks['ASIS']))
+    left_knee = calculate_distance(np.array(left_landmarks['LEC']), np.array(left_landmarks['MEC']))
+    right_knee = calculate_distance(np.array(right_landmarks['LEC']), np.array(right_landmarks['MEC']))
+    left_ankle = calculate_distance(np.array(left_landmarks['malleolus_med']), np.array(left_landmarks['malleolus_lat']))
+    right_ankle = calculate_distance(np.array(right_landmarks['malleolus_med']), np.array(right_landmarks['malleolus_lat']))
+
     measurements = {
         "MAE": 11.0729,
         "RMSE": 12.705,
-        "ASIS Width": 0.246,
-        "Left Knee Width (m)": 0.0826,
-        "Left Ankle Width (m)": 0.0600,
-        "Knee Width (Right)": 0.0963,
-        "Ankle Width (Right)": 0.626
+        "ASIS Width (mm)": asis_width,
+        "Left Knee Width (mm)": left_knee,
+        "Left Ankle Width (mm)": left_ankle,
+        "Right Knee Width (mm)": right_knee,
+        "Right Ankle Width (mm)": right_ankle
     }
 
     return measurements

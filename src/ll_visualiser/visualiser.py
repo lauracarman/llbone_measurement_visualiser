@@ -22,7 +22,7 @@ def visualise_model(plotter, model_directory, left_original_landmark_file, right
     visualise_landmarks_min(plotter, left_original_landmarks, 'left', 'orange')
     visualise_landmarks_min(plotter, right_original_landmarks, 'right', 'orange')
 
-    measurements = define_measurements()
+    measurements = define_measurements(left_predicted_landmarks, right_predicted_landmarks)
     visualise_measurements(plotter, measurements)
 
     # Set initial view to frontal view.
