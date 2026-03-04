@@ -47,17 +47,19 @@ def add_landmark_spheres(p, sphere_meshes, colour='red'):
         p.add_mesh(mesh, color=colour, show_edges=False, opacity=0.99)
 
 
-def visualise_landmarks(p, landmarks, side, colour='red'):
+def visualise_landmarks(p, landmarks, differences, side, colour='red'):
     """
     Args:
         p (pv.Plotter): PyVista Plotter object.
         landmarks (dictionary): Dictionary of landmarks.
+        differences (dictionary): Differences in positions between original and predicted landmarks.
         side (str): Side (left/right).
         colour (str): Landmark sphere colour.
     """
     label_text_color = 'white'
 
-    plot_landmarks_lbls, plot_landmarks_points, line_meshes, sphere_meshes = process_landmarks(landmarks, side)
+    plot_landmarks_labels, plot_landmarks_points, line_meshes, sphere_meshes = process_landmarks(landmarks, side)
+    add_differences(plot_landmarks_labels, differences)
 
     # Landmark label lines.
     for mesh in line_meshes:
@@ -69,7 +71,7 @@ def visualise_landmarks(p, landmarks, side, colour='red'):
     # Plots landmark labels.
     justification = 'left' if side == 'left' else 'right'
     landmark_actor = p.add_point_labels(plot_landmarks_points,
-                                        plot_landmarks_lbls,
+                                        plot_landmarks_labels,
                                         text_color=label_text_color,
                                         font_size=12,
                                         always_visible=True,
@@ -82,8 +84,14 @@ def visualise_landmarks_min(p, landmarks, side, colour):
     """
     Visualize only the landmark spheres without labels or lines.
     """
-    _, _, _, sphere_meshes = process_landmarks(landmarks, side)
+    plot_landmarks_labels, plot_landmarks_points, _, sphere_meshes = process_landmarks(landmarks, side)
     add_landmark_spheres(p, sphere_meshes, colour)
+
+
+def add_differences(plot_landmarks_labels, differences):
+    for i, label in enumerate(plot_landmarks_labels):
+        if label in differences:
+            plot_landmarks_labels[i] = f"{label} ({differences[label]}m)"
 
 
 def process_landmarks(landmarks, side, units='m'):
@@ -113,3 +121,43 @@ def process_landmarks(landmarks, side, units='m'):
 
     return plot_landmarks_labels, plot_landmarks_points, line_meshes, sphere_meshes
 
+def define_measurements():
+    measurements = {
+        "MAE": 11.0729,
+        "RMSE": 12.705,
+        "ASIS Width": 0.246,
+        "Left Knee Width (m)": 0.0826,
+        "Left Ankle Width (m)": 0.0600,
+        "Knee Width (Right)": 0.0963,
+        "Ankle Width (Right)": 0.626
+    }
+
+    return measurements
+
+
+def calculate_differences(original_landmarks, predicted_landmarks):
+    landmarks_of_interest = ['ASIS', 'LEC', 'MEC', 'malleolus_lat', 'malleolus_med']
+
+    differences = {}
+    for landmark in landmarks_of_interest:
+        if landmark not in original_landmarks or landmark not in predicted_landmarks:
+            continue
+
+        original = np.array(original_landmarks[landmark])
+        predicted = np.array(predicted_landmarks[landmark])
+        differences[landmark] = np.linalg.norm(original - predicted)
+
+    return differences
+
+
+def visualise_measurements(plotter, measurements):
+    data_table_text = ''
+
+    data_table_text += '---- Measurements ----\n\n'
+    for key, value in measurements.items():
+        data_table_text += f'{key}: {value}\n'
+
+    actor = plotter.add_text(data_table_text,
+                       position='upper_right',
+                       color='white',
+                       font_size=10)
