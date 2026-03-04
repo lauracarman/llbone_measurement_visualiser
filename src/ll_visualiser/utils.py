@@ -91,7 +91,7 @@ def visualise_landmarks_min(p, landmarks, side, colour):
 def add_differences(plot_landmarks_labels, differences):
     for i, label in enumerate(plot_landmarks_labels):
         if label in differences:
-            plot_landmarks_labels[i] = f"{label} ({differences[label]}m)"
+            plot_landmarks_labels[i] = f"{label} ({differences[label]}mm)"
 
 
 def process_landmarks(landmarks, side, units='m'):
@@ -143,7 +143,8 @@ def calculate_differences(original_landmarks, predicted_landmarks):
         if landmark in original_landmarks and landmark in predicted_landmarks:
             original = np.array(original_landmarks[landmark])
             predicted = np.array(predicted_landmarks[landmark])
-            differences[landmark] = np.linalg.norm(original - predicted)
+            distance_mm = np.linalg.norm(original - predicted) * 1000
+            differences[landmark] = round(distance_mm, 2)
 
     return differences
 
