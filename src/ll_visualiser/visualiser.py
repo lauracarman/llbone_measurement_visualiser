@@ -1,7 +1,7 @@
 
 from ll_visualiser.utils import (visualise_meshes, visualise_landmarks, visualise_landmarks_min,
                                  get_files_by_extension, load_landmarks, define_measurements, visualise_measurements,
-                                 calculate_differences)
+                                 calculate_differences, get_fit_metrics)
 
 
 def visualise_model(plotter, model_directory, left_original_landmark_file, right_original_landmark_file,
@@ -22,8 +22,9 @@ def visualise_model(plotter, model_directory, left_original_landmark_file, right
     visualise_landmarks_min(plotter, left_original_landmarks, 'left', 'orange')
     visualise_landmarks_min(plotter, right_original_landmarks, 'right', 'orange')
 
+    metrics = get_fit_metrics(model_directory)
     measurements = define_measurements(left_predicted_landmarks, right_predicted_landmarks)
-    visualise_measurements(plotter, measurements)
+    visualise_measurements(plotter, metrics, measurements)
 
     # Set initial view to frontal view.
     plotter.view_zy(negative=True)

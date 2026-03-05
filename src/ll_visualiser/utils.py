@@ -26,6 +26,28 @@ def load_landmarks(landmark_file):
     return {row[0]: row[1:].astype(float).tolist() for row in data}
 
 
+def get_fit_metrics(model_directory):
+    fit_metrics_file = os.path.join(model_directory, 'asm_fit_metrics.txt')
+
+    with open(fit_metrics_file, 'r') as f:
+        lines = f.readlines()
+
+    headers = [h.strip() for h in lines[0].split(',')]
+    left_values  = [v.strip() for v in lines[1].split(',')]
+    right_values = [v.strip() for v in lines[2].split(',')]
+    left  = dict(zip(headers, left_values))
+    right = dict(zip(headers, right_values))
+
+    metrics = {
+        "MAE (Left)":    left['MAE'],
+        "RMSE (Left)":   left['RMSE'],
+        "MAE (Right)":   right['MAE'],
+        "RMSE (Right)":  right['RMSE'],
+    }
+
+    return metrics
+
+
 def visualise_meshes(p, mesh_files):
     """
     Args:
@@ -132,8 +154,6 @@ def define_measurements(left_landmarks, right_landmarks):
     right_ankle = calculate_distance(np.array(right_landmarks['malleolus_med']), np.array(right_landmarks['malleolus_lat']))
 
     measurements = {
-        "MAE": 11.0729,
-        "RMSE": 12.705,
         "ASIS Width (mm)": asis_width,
         "Left Knee Width (mm)": left_knee,
         "Left Ankle Width (mm)": left_ankle,
@@ -158,10 +178,15 @@ def calculate_differences(original_landmarks, predicted_landmarks):
     return differences
 
 
-def visualise_measurements(plotter, measurements):
+def visualise_measurements(plotter, metrics, measurements):
     data_table_text = ''
 
-    data_table_text += '---- Measurements ----\n\n'
+    data_table_text += '---- ASM Fit Metrics ----\n'
+    for key, value in metrics.items():
+        data_table_text += f'{key}: {value}\n'
+    data_table_text += '\n'
+
+    data_table_text += '---- Measurements ----\n'
     for key, value in measurements.items():
         data_table_text += f'{key}: {value}\n'
 
