@@ -39,10 +39,10 @@ def get_fit_metrics(model_directory):
     right = dict(zip(headers, right_values))
 
     metrics = {
-        "MAE (Left)":    left['MAE'],
-        "RMSE (Left)":   left['RMSE'],
-        "MAE (Right)":   right['MAE'],
-        "RMSE (Right)":  right['RMSE'],
+        "MAE (Left)": round(float(left['MAE'])),
+        "RMSE (Left)": round(float(left['RMSE'])),
+        "MAE (Right)": round(float(right['MAE'])),
+        "RMSE (Right)": round(float(right['RMSE'])),
     }
 
     return metrics
@@ -145,7 +145,7 @@ def process_landmarks(landmarks, side, units='m'):
 
 def define_measurements(left_landmarks, right_landmarks):
     def calculate_distance(point_1, point_2):
-        return f"{np.linalg.norm(point_1 - point_2) * 1000:.2f}"
+        return str(round(np.linalg.norm(point_1 - point_2) * 1000))
 
     asis_width = calculate_distance(np.array(left_landmarks['ASIS']), np.array(right_landmarks['ASIS']))
     left_knee = calculate_distance(np.array(left_landmarks['LEC']), np.array(left_landmarks['MEC']))
@@ -154,11 +154,11 @@ def define_measurements(left_landmarks, right_landmarks):
     right_ankle = calculate_distance(np.array(right_landmarks['malleolus_med']), np.array(right_landmarks['malleolus_lat']))
 
     measurements = {
-        "ASIS Width (mm)": asis_width,
-        "Left Knee Width (mm)": left_knee,
-        "Left Ankle Width (mm)": left_ankle,
-        "Right Knee Width (mm)": right_knee,
-        "Right Ankle Width (mm)": right_ankle
+        "ASIS Width": asis_width,
+        "Left Knee Width": left_knee,
+        "Left Ankle Width": left_ankle,
+        "Right Knee Width": right_knee,
+        "Right Ankle Width": right_ankle
     }
 
     return measurements
@@ -173,7 +173,7 @@ def calculate_differences(original_landmarks, predicted_landmarks):
             original = np.array(original_landmarks[landmark])
             predicted = np.array(predicted_landmarks[landmark])
             distance_mm = np.linalg.norm(original - predicted) * 1000
-            differences[landmark] = round(distance_mm, 2)
+            differences[landmark] = round(distance_mm)
 
     return differences
 
@@ -183,12 +183,12 @@ def visualise_measurements(plotter, metrics, measurements):
 
     data_table_text += '---- ASM Fit Metrics ----\n'
     for key, value in metrics.items():
-        data_table_text += f'{key}: {value}\n'
+        data_table_text += f'{key}: {value}mm\n'
     data_table_text += '\n'
 
     data_table_text += '---- Measurements ----\n'
     for key, value in measurements.items():
-        data_table_text += f'{key}: {value}\n'
+        data_table_text += f'{key}: {value}mm\n'
 
     actor = plotter.add_text(data_table_text,
                        position='upper_right',
