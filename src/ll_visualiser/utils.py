@@ -165,10 +165,10 @@ def define_measurements(left_landmarks, right_landmarks):
 
 
 def calculate_differences(original_landmarks, predicted_landmarks):
-    landmarks_of_interest = ['ASIS', 'LEC', 'MEC', 'malleolus_lat', 'malleolus_med']
+    landmarks = ['ASIS', 'PSIS', 'LEC', 'MEC', 'malleolus_lat', 'malleolus_med']
 
     differences = {}
-    for landmark in landmarks_of_interest:
+    for landmark in landmarks:
         if landmark in original_landmarks and landmark in predicted_landmarks:
             original = np.array(original_landmarks[landmark])
             predicted = np.array(predicted_landmarks[landmark])
